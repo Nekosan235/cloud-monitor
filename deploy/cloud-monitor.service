@@ -1,0 +1,28 @@
+# Cloud VM metrics push agent.
+# Drop-in for Debian/Ubuntu. The EnvironmentFile is read by systemd as root,
+# so /etc/personal-site/cloud-monitor.env can be mode 600. Do not pass --once:
+# Restart=always would start another one-shot immediately.
+[Unit]
+Description=Personal Site Remote Cloud Monitor Push Agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=personal-monitor
+Group=personal-monitor
+EnvironmentFile=/etc/personal-site/cloud-monitor.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 /opt/personal-site/cloud-monitor.py
+Restart=always
+RestartSec=10
+MemoryMax=64M
+TasksMax=16
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/proc
+
+[Install]
+WantedBy=multi-user.target
